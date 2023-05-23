@@ -22,6 +22,7 @@ public class Person
     private Person? _father;
     private Person? _mother;
     private static int personCount = 0;     //instance counter serving as a reference for the Id
+    private Person? parent;
 
     public Person(string firstName, Gender gender)
     {

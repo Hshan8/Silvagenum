@@ -3,7 +3,7 @@
 namespace SilvagenumData;
 public class DummyRepo : IRepo
 {
-    private List<Person>? content;
+    private readonly List<Person>? content;
 
     public DummyRepo()
     {

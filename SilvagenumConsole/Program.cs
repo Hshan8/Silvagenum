@@ -4,11 +4,13 @@ using SilvagenumLogic;
 internal class Program
 {
     public static Person? selectedPerson = null;
-    delegate void Del(IRepo repo);
+    public static IRepo activeRepo = new DummyRepo();
+    delegate void Del();
 
     private static void Main()
     {
-        IRepo activeRepo = new DummyRepo();
+        Person? selectedPerson = null;
+        Person? returnedPerson = null;
         Console.WriteLine("Welcome to the Silvagenum app!");
 
         string finalDescription;
@@ -18,11 +20,10 @@ internal class Program
                                      + "\n 3 - Search person by name"
                                      + "\n 4 - Add a new person";
 
-        Del displayAllHandle = delegate (IRepo repo) { DisplayAll(repo.GetAll(), "The repository is empty."); };
-        Del searchIdHandle = delegate (IRepo repo) { SearchById("Enter the id to search for:", repo: repo); };
-        Del searchNameHandle = new(SearchByName);
-        Del addNewHandle = new(AddNewPerson);
-        Del interactHandle = new(InteractWith);
+        Del displayAllHandle = delegate () { DisplayAll(activeRepo.GetAll(), "The repository is empty."); };
+        Del searchIdHandle = delegate () { returnedPerson = SearchById("Enter the id to search for:"); };
+        Del searchNameHandle = delegate () { returnedPerson = SearchByName(); };
+        Del addNewHandle = delegate () { returnedPerson = AddNewPerson(); };
 
         bool exit = false;
         while (!exit)
@@ -31,8 +32,7 @@ internal class Program
             {
                 finalDescription = initialDescription
                                    + "\n\n 0 - Exit the app";
-                exit = DisplayMenu(activeRepo,
-                               finalDescription,
+                exit = DisplayMenu(finalDescription,
                                displayAllHandle,
                                searchIdHandle,
                                searchNameHandle,
@@ -43,43 +43,31 @@ internal class Program
                 finalDescription = initialDescription
                                    + $"\n 5 - View or modify {selectedPerson}"
                                    + "\n\n 0 - Exit the app";
-                exit = DisplayMenu(activeRepo,
-                               finalDescription,
+                exit = DisplayMenu(finalDescription,
                                displayAllHandle,
                                searchIdHandle,
                                searchNameHandle,
                                addNewHandle,
-                               interactHandle);
+                               InteractWith);
             }
+            selectedPerson = returnedPerson ?? selectedPerson;
         }
         Console.WriteLine("See you!");
     }
 
-    private static bool DisplayMenu(IRepo repo, string description, params Del[] delegates)
+    private static bool DisplayMenu(string description, params Del[] delegates)
     {
-        string input;
-
-        //Console.Clear();
         Console.WriteLine(description);
         while (true)
         {
-            input = ProvideValidString();
-            if (input == "0")
+            int input = ProvideValidInt(maxValid: delegates.Length);
+            if (input == 0)
             {
                 return true;
             }
-            else
-            {
-                for (int i = 1; i <= delegates.Length; i++)
-                {
-                    if (input == $"{i}")
-                    {
-                        delegates[i - 1].Invoke(repo);
-                        return false;
-                    }
-                }
-                Console.WriteLine("Incorrect input, please try again.");
-            }
+
+            delegates[input - 1].Invoke();
+            return false;
         }
     }
 
@@ -95,112 +83,101 @@ internal class Program
         else { Console.WriteLine(emptySourceMessage); }
     }
 
-    private static void SearchById(string description, IRepo? repo = null, List<Person>? list = null)
+    private static Person? SearchById(string description, List<Person>? list = null)
     {
         Console.WriteLine(description);
 
         Person? person = null;
-        if (repo != null)
+        if (list == null)
         {
-            person = repo.Get(ProvideValidInt());
+            person = activeRepo.Get(ProvideValidInt());
         }
-        else if (list != null)
+        else
         {
             person = list.Find(x => x.Id == ProvideValidInt());
-        }                                                           //dobre miejsce na dorzucenie łapania błędów
+        }
 
         if (person != null)
         {
             Console.WriteLine($"Person found: {person}");
-            selectedPerson = person;
         }
         else
         {
             Console.WriteLine("No person found!");
         }
+        return person;
     }
 
-    private static void SearchByName(IRepo repo)
+    private static Person? SearchByName()
     {
         Console.WriteLine("Enter the name to search for (case insensitive):");
 
-        List<Person>? list = repo.Get(ProvideValidString());
+        List<Person>? list = activeRepo.Get(ProvideValidString());
 
         if (list is null || list?.Count == 0)
         {
             Console.WriteLine("No person found!");
+            return null;
         }
-        else if (list?.Count == 1)
+
+        if (list?.Count == 1)
         {
             Console.WriteLine($"Person found: {list[0]}");
-            selectedPerson = list[0];
+            return list[0];
         }
-        else
-        {
-            Console.WriteLine($"Found multiple results:");
-            DisplayAll(list!);
 
-            Console.WriteLine("\n 1 - Select a person from the list by id"
-                              + "\n 0 - Back to the main menu");
-            bool exit = false;
-            while (!exit)
-            {
-                switch (ProvideValidString())
-                {
-                    case "1":
-                        SearchById("Enter the id to select from the list:", list: list);
-                        exit = true;
-                        break;
-                    case "0":
-                        exit = true;
-                        break;
-                    default:
-                        Console.WriteLine("Incorrect input, please try again.");
-                        break;
-                }
-            }
+        Console.WriteLine($"Found multiple results:");
+        DisplayAll(list!);
+
+        Console.WriteLine("\n 1 - Select a person from the list by id"
+                          + "\n 0 - Back to the main menu");
+
+        if (ProvideValidInt(maxValid: 1) == 1)
+        {
+            return SearchById("Enter the id to select from the list:", list: list);
         }
+        return null;
     }
 
-    private static void AddNewPerson(IRepo repo)
+    private static Person AddNewPerson()
     {
-        Gender gender = Gender.UNASSIGNED;
-
         Console.WriteLine("Enter the (first) name of the new person:");
-
         string name = ProvideValidString();
 
         Console.WriteLine("Select the gender of the new person - [m]ale or [f]emale:");
-        while (gender == Gender.UNASSIGNED)
+        Gender gender = SelectGender();
+
+        Person newPerson = new(name, gender);
+        activeRepo.Add(newPerson);
+        Console.WriteLine($"New person added: {newPerson}");
+        return newPerson;
+    }
+
+    private static Gender SelectGender()
+    {
+        while (true)
         {
-            string input = ProvideValidString();
-            switch (input)
+            switch (ProvideValidString())
             {
                 case "m":
-                    gender = Gender.male;
-                    break;
+                    return Gender.male;
                 case "f":
-                    gender = Gender.female;
-                    break;
+                    return Gender.female;
                 default:
                     Console.WriteLine("Incorrect input, please try again.");
                     break;
             }
         }
-
-        selectedPerson = new(name, gender);
-        repo.Add(selectedPerson);
-        Console.WriteLine($"New person added: {selectedPerson}");
     }
 
-    private static void InteractWith(IRepo repo)
+    private static void InteractWith()            //selectedPerson
     {
         bool wasEdited = false;
         string description;
 
-        Del detailsHandle = delegate (IRepo repo) { selectedPerson!.ShowDetails(); };
-        Del editHandle = delegate (IRepo repo) { wasEdited = EditSelected(repo); };
-        Del deleteHandle = delegate (IRepo repo) { wasEdited = DeleteSelected(repo); };
+        Del detailsHandle = delegate () { selectedPerson!.ShowDetails(); };
+        Del editHandle = delegate () { wasEdited = EditSelected(); };
+        Del deleteHandle = delegate () { wasEdited = DeleteSelected(); };
 
         bool exit = false;
         while (!exit && selectedPerson is not null)
@@ -213,8 +190,7 @@ internal class Program
 
             while (!exit && !wasEdited)
             {
-                exit = DisplayMenu(repo,
-                                   description,
+                exit = DisplayMenu(description,
                                    detailsHandle,
                                    editHandle,
                                    deleteHandle);
@@ -222,7 +198,7 @@ internal class Program
         }
     }
 
-    private static bool EditSelected(IRepo repo)        //WIP
+    private static bool EditSelected()            //selectedPerson
     {
         string? fatherName;
         string? motherName;
@@ -232,13 +208,13 @@ internal class Program
         bool wasEdited;
         bool wasEditedExport = false;
 
-        Del nameHandle = delegate (IRepo repo) { wasEdited = EditName(false); };
-        Del surnameHandle = delegate (IRepo repo) { wasEdited = EditName(true); };
-        Del birthHandle = delegate (IRepo repo) { wasEdited = EditDate(false); };
-        Del deathHandle = delegate (IRepo repo) { wasEdited = EditDate(true); };
-        Del motherHandle = delegate (IRepo repo) { wasEdited = SetParent(repo, Gender.female); };
-        Del fatherHandle = delegate (IRepo repo) { wasEdited = SetParent(repo, Gender.male); };
-        Del childrenHandle = delegate (IRepo repo) { wasEdited = EditChildren(repo); };
+        Del nameHandle = delegate () { wasEdited = EditName(false); };
+        Del surnameHandle = delegate () { wasEdited = EditName(true); };
+        Del birthHandle = delegate () { wasEdited = EditDate(false); };
+        Del deathHandle = delegate () { wasEdited = EditDate(true); };
+        Del motherHandle = delegate () { wasEdited = EditParent(Gender.female); };
+        Del fatherHandle = delegate () { wasEdited = EditParent(Gender.male); };
+        Del childrenHandle = delegate () { wasEdited = EditChildren(); };
 
         bool exit = false;
         while (!exit)
@@ -248,20 +224,19 @@ internal class Program
             birthDateString = selectedPerson!.BirthDate?.ToString();
             deathDateString = selectedPerson!.DeathDate?.ToString();
             description = $"You're editing {selectedPerson}, choose the info to edit:"
-                             + $"\n 1 - Name - {selectedPerson.Name}"
-                             + $"\n 2 - Surname - {selectedPerson.Surname}"
-                             + $"\n 3 - Birth date - {birthDateString ?? "undefined"}"
-                             + $"\n 4 - Death date - {deathDateString ?? "undefined"}"
-                             + $"\n 5 - Mother - {motherName ?? "undefined"}"
-                             + $"\n 6 - Father - {fatherName ?? "undefined"}"
-                             + $"\n 7 - Children - {selectedPerson.Children.Count}"
+                             + $"\n 1 - Name: {selectedPerson.Name}"
+                             + $"\n 2 - Surname: {selectedPerson.Surname}"
+                             + $"\n 3 - Birth date: {birthDateString ?? "undefined"}"
+                             + $"\n 4 - Death date: {deathDateString ?? "undefined"}"
+                             + $"\n 5 - Mother: {motherName ?? "undefined"}"
+                             + $"\n 6 - Father: {fatherName ?? "undefined"}"
+                             + $"\n 7 - Children: {selectedPerson.Children.Count}"
                              + "\n\n 0 - Back to interaction menu";
             wasEdited = false;
 
             while (!exit && !wasEdited)
             {
-                exit = DisplayMenu(repo,
-                                   description,
+                exit = DisplayMenu(description,
                                    nameHandle,
                                    surnameHandle,
                                    birthHandle,
@@ -275,7 +250,7 @@ internal class Program
         return wasEditedExport;
     }
 
-    private static bool DeleteSelected(IRepo repo)
+    private static bool DeleteSelected()            //selectedPerson
     {
         Console.WriteLine($"Are you sure you want to delete {selectedPerson}? This is irreversible. [y/n]");
         while (true)
@@ -283,7 +258,7 @@ internal class Program
             switch (ProvideValidString().ToLower())
             {
                 case "y":
-                    repo.Delete(selectedPerson!);
+                    activeRepo.Delete(selectedPerson!);
                     selectedPerson = null;
                     return true;
                 case "n":
@@ -295,7 +270,7 @@ internal class Program
         }
     }
 
-    private static bool EditName(bool editSurname)
+    private static bool EditName(bool editSurname)          //selectedPerson
     {
         string sur = editSurname ? "sur" : "";
 
@@ -316,7 +291,7 @@ internal class Program
         return true;
     }
 
-    private static bool EditDate(bool editDeath)
+    private static bool EditDate(bool editDeath)            //selectedPerson
     {
         string dateName = editDeath ? "death" : "birth";
         DateOnly? currentDate = editDeath ? selectedPerson!.DeathDate : selectedPerson!.BirthDate;
@@ -345,7 +320,7 @@ internal class Program
         return true;
     }
 
-    private static bool SetParent(IRepo repo, Gender gender)
+    private static bool EditParent(Gender gender)            //selectedPerson
     {
         string parentType;
         string? currentParent;
@@ -371,27 +346,18 @@ internal class Program
             Console.WriteLine($"There is no {parentType} currently set for {selectedPerson}. Please select the method of providing one:");
         }
 
-        parent = ProvidePerson(repo);
-
-        if (gender == Gender.male)
-        {
-            selectedPerson.Father = parent;
-        }
-        else
-        {
-            selectedPerson.Mother = parent;
-        }
-
+        parent = ProvidePerson();
+        selectedPerson.SetOrDeleteParent(parent);
         Console.WriteLine($"{parent} set as new {parentType} of {selectedPerson}.");
         return true;
     }
 
-    private static bool EditChildren(IRepo repo)
+    private static bool EditChildren()            //selectedPerson
     {
         int childCount;
         string deleteDescription;
         bool result = false;
-        Person editedPerson;
+        Person child;
 
         while (true)
         {
@@ -403,40 +369,24 @@ internal class Program
                               + $"{deleteDescription}"
                               + "\n 0 - Back to the edit menu");
 
-            switch (ProvideValidString())
+            switch (ProvideValidInt(maxValid: childCount > 0 ? 2 : 1))
             {
-                case "1":
+                case 1:
                     Console.WriteLine("Select the source of the new child:");
-                    selectedPerson.Children.Add(ProvidePerson(repo));
+                    selectedPerson.Children.Add(ProvidePerson());
                     result = true;
                     break;
-                case "2":
-                    if (childCount > 0)
+                case 2:
+                    Console.WriteLine("The current list of children:");
+                    DisplayAll(selectedPerson!.Children);
+                    child = SearchById("Enter the id of the child to remove from the list:", list: selectedPerson!.Children);
+                    if (child != null)
                     {
-                        Console.WriteLine("The current list of children:");
-                        foreach (Person child in selectedPerson!.Children)
-                        {
-                            Console.WriteLine(child);
-                        }
-                        editedPerson = selectedPerson;
-                        selectedPerson = null;
-                        SearchById("Enter the id of the child to remove from the list:", list: editedPerson.Children);
-                        if (selectedPerson != null)
-                        {
-                            if (editedPerson.Gender == Gender.male)
-                            {
-                                selectedPerson.Father = null;
-                            }
-                            else
-                            {
-                                selectedPerson.Mother = null;
-                            }
-                            result = true;
-                        }
+                        child.SetOrDeleteParent(selectedPerson.Gender);
+                        result = true;
                     }
-                    else { goto default; }
                     break;
-                case "0":
+                case 0:
                     return result;
                 default:
                     Console.WriteLine("Incorrect input, please try again.");
@@ -445,33 +395,25 @@ internal class Program
         }
     }
 
-    private static Person ProvidePerson(IRepo repo)
+    private static Person ProvidePerson()           //possible null output
     {
-        Person tempPerson;
-        Person result;
+        Person? returnedPerson = null;
         string description = " 1 - Search person by ID"
                              + "\n 2 - Search person by name"
                              + "\n 3 - Add a new person";
-        Del searchIdHandle = delegate (IRepo repo) { SearchById("Enter the id to search for:", repo: repo); };
-        Del searchNameHandle = new(SearchByName);
-        Del addNewHandle = new(AddNewPerson);
-
-        tempPerson = selectedPerson!;
-        selectedPerson = null;
+        Del searchIdHandle = delegate () { returnedPerson = SearchById("Enter the id to search for:"); };
+        Del searchNameHandle = delegate () { returnedPerson = SearchByName(); };
+        Del addNewHandle = delegate () { returnedPerson = AddNewPerson(); };
 
         bool exit = false;
-        while (!exit && selectedPerson is null)
+        while (!exit && returnedPerson is null)
         {
-            exit = DisplayMenu(repo,
-                               description,
+            exit = DisplayMenu(description,
                                searchIdHandle,
                                searchNameHandle,
                                addNewHandle);
         }
-
-        result = selectedPerson!;
-        selectedPerson = tempPerson;
-        return result;
+        return returnedPerson;
     }
 
     private static string ProvideValidString()
@@ -497,13 +439,13 @@ internal class Program
         return date;
     }
 
-    private static int ProvideValidInt()
+    private static int ProvideValidInt(int maxValid = int.MaxValue)
     {
-        int id;
-        while (!int.TryParse(Console.ReadLine(), out id))
+        int result;
+        while (!int.TryParse(Console.ReadLine(), out result) || result > maxValid)
         {
             Console.WriteLine("Incorrect input, please try again.");
         }
-        return id;
+        return result;
     }
 }
