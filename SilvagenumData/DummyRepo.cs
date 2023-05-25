@@ -40,4 +40,9 @@ public class DummyRepo : IRepo
     {
         content!.Add(newPerson);
     }
+
+    public void Save()
+    {
+        Console.WriteLine("This is a dummy repo, it does not save changes after the app closes!");
+    }
 }

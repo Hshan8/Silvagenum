@@ -5,21 +5,6 @@ public static class PersonExtensions
     /// <summary>
     /// Test summary
     /// </summary>
-    public static void ShowDetails(this Person person)
-    {
-        Console.WriteLine(person);
-        Console.WriteLine(person.Gender);
-
-        string? livingUntil = person.DeathDate?.ToString();
-        Console.WriteLine($"Living: {person.BirthDate} - {livingUntil ?? "today"}");
-
-        string? fatherName = person.Father?.ToString();
-        Console.WriteLine($"Father: {fatherName ?? "undefined"}");
-
-        string? motherName = person.Mother?.ToString();
-        Console.WriteLine($"Mother: {motherName ?? "undefined"}\n");
-    }
-
     private static string? IsValidAsParentOf(Person parent, Person child, Gender gender)
     {
         string parentName = gender == Gender.male ? "father" : "mother";
