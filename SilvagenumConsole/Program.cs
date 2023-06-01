@@ -3,7 +3,7 @@ using SilvagenumLogic;
 
 internal class Program
 {
-    public static IRepo activeRepo = new DummyRepo();
+    public static IRepo activeRepo = new SQLRepo();
     delegate void Del(Person person);
     enum Menu
     {
@@ -426,7 +426,7 @@ internal class Program
         }
     }
 
-    private static Person? ProvidePerson()           //add proper cancel reaction
+    private static Person? ProvidePerson()
     {
         Person? result = null;
         string description = " 1 - Search person by ID"
