@@ -1,4 +1,7 @@
-﻿namespace SilvagenumLogic;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SilvagenumLogic;
 
 public enum Gender
 {
@@ -9,29 +12,37 @@ public enum Gender
 
 public class Person
 {
-    public int Id { get; private set; }
+    [Key]
+    public int PersonId { get;  set; }
     public Gender Gender { get; set; }
     public string Name { get; set; }
     public string? Surname { get; set; }
+    
+    [NotMapped]
     public string FullName => $"{Name} {Surname}".Trim();
 
-    public DateOnly? BirthDate { get; set; }
-    public DateOnly? DeathDate { get; set; }
+    public DateTime? BirthDate { get; set; }
+    public DateTime? DeathDate { get; set; }
+    
+    
     public List<Person> Children { get; } = new List<Person>();
-
     private Person? _father;
     private Person? _mother;
-    private static int personCount = 0;     //instance counter serving as a reference for the Id
     private Person? parent;
+
+    public Person()
+    {
+        
+    }
 
     public Person(string firstName, Gender gender)
     {
         Name = firstName;
-        personCount++;
-        Id = personCount;
         Gender = gender;
     }
-
+    
+    //remove NotMapped when you map relationship in db or by EF corewith person
+    [NotMapped]
     public Person? Father
     {
         get { return _father; }
@@ -50,6 +61,8 @@ public class Person
             }
         }
     }
+    //remove NotMapped when you map relationship in db or by EF corewith person
+    [NotMapped]
     public Person? Mother
     {
         get { return _mother; }
@@ -69,5 +82,5 @@ public class Person
         }
     }
 
-    public override string ToString() => $"{FullName} (#{Id})";
+    public override string ToString() => $"{FullName} (#{PersonId})";
 }

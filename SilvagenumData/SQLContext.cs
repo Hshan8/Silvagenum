@@ -9,7 +9,7 @@ namespace SilvagenumData
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source= (localdb)\\MSSQLLocalDB; Initial Catalog=SilvagenumData");        //for showcase purposes only, actual app should have a variable string
+            optionsBuilder.UseSqlServer("Data Source= (localdb)\\MSSQLLocalDB; Initial Catalog=SilvagenumData");
         }
     }
 }

@@ -178,7 +178,7 @@ internal class Program
         }
         else
         {
-            person = list.Find(x => x.Id == ProvideValidInt());
+            person = list.Find(x => x.PersonId == ProvideValidInt());
         }
 
         if (person != null)
@@ -319,8 +319,8 @@ internal class Program
     private static void EditDate(Person person, bool editDeath = false)
     {
         string dateName = editDeath ? "death" : "birth";
-        DateOnly? currentDate = editDeath ? person.DeathDate : person.BirthDate;
-        DateOnly newDate;
+        DateTime? currentDate = editDeath ? person.DeathDate : person.BirthDate;
+        DateTime newDate;
 
         if (currentDate is not null)
         {
@@ -462,11 +462,11 @@ internal class Program
         return input;
     }
 
-    private static DateOnly ProvideValidDate()
+    private static DateTime ProvideValidDate()
     {
-        DateOnly date;
+        DateTime date;
         string? input = Console.ReadLine();
-        while (!DateOnly.TryParse(input, out date))
+        while (!DateTime.TryParse(input, out date))
         {
             Console.WriteLine("Incorrect input, please try again.");
             input = Console.ReadLine();

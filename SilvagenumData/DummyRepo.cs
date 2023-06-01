@@ -21,7 +21,7 @@ public class DummyRepo : IRepo
 
     public Person? Get(int id)
     {
-        return content!.Find(x => x.Id == id);
+        return content!.Find(x => x.PersonId == id);
     }
 
     public List<Person>? Get(string name)
