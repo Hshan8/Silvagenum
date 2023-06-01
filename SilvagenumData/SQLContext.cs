@@ -11,5 +11,20 @@ namespace SilvagenumData
         {
             optionsBuilder.UseSqlServer("Data Source= (localdb)\\MSSQLLocalDB; Initial Catalog=SilvagenumData");
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Person>()
+                .HasOne<Person>(x => x.Father)
+                .WithOne()
+                .HasForeignKey<Person>(x => x.FatherId);
+            
+            modelBuilder.Entity<Person>()
+                .HasOne<Person>(x => x.Mother)
+                .WithOne()
+                .HasForeignKey<Person>(x => x.MotherId);
+            
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

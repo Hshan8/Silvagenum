@@ -25,6 +25,7 @@ public class Person
     public DateTime? DeathDate { get; set; }
     
     
+    [NotMapped]
     public List<Person> Children { get; } = new List<Person>();
     private Person? _father;
     private Person? _mother;
@@ -42,7 +43,8 @@ public class Person
     }
     
     //remove NotMapped when you map relationship in db or by EF corewith person
-    [NotMapped]
+    [ForeignKey("Person")]
+    public int? FatherId { get; set; }
     public Person? Father
     {
         get { return _father; }
@@ -62,7 +64,8 @@ public class Person
         }
     }
     //remove NotMapped when you map relationship in db or by EF corewith person
-    [NotMapped]
+    [ForeignKey("Person")]
+    public int? MotherId { get; set; }
     public Person? Mother
     {
         get { return _mother; }
