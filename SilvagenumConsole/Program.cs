@@ -24,10 +24,10 @@ internal class Program
         void DisplayAllHandle(Person selectedPerson) => DisplayAll(activeRepo.GetAll(), "The repository is empty.");
         void SearchIdHandle(Person selectedPerson) => returnedPerson = SearchById("Enter the id to search for:");
         void SearchNameHandle(Person selectedPerson) => returnedPerson = SearchByName();
-        void AddPersonHandle(Person selectedPerson) => selectedPerson = AddNewPerson();
+        void AddPersonHandle(Person selectedPerson) => returnedPerson = AddNewPerson();
         void InteractHandle(Person selectedPerson) => position = Menu.Interact;
         void EditHandle(Person selectedPerson) => position = Menu.Edit;
-        void DeleteHandle(Person selectedPerson)
+        void DeleteHandle(Person? selectedPerson)
         {
             Delete(ref selectedPerson);
             position = Menu.Main;
@@ -46,7 +46,6 @@ internal class Program
                                        SearchIdHandle,
                                        SearchNameHandle,
                                        AddPersonHandle);
-                    if (selectedPerson is not null) position = Menu.MainWithSelectedPerson;
                     break;
 
                 case Menu.MainWithSelectedPerson:
@@ -87,6 +86,8 @@ internal class Program
                     break;
             }
             selectedPerson = returnedPerson ?? selectedPerson;
+            if (selectedPerson != null && position == Menu.Main) position = Menu.MainWithSelectedPerson;
+            Console.WriteLine(selectedPerson);
         }
         activeRepo.Save();
         Console.WriteLine("See you!");
@@ -150,7 +151,7 @@ internal class Program
                 return true;
             }
 
-            delegates[input - 1].Invoke(person);
+            delegates[input - 1].Invoke(person);            //"person" should only ever be null for methods which don't take it as a parameter
             return false;
         }
     }
@@ -179,6 +180,7 @@ internal class Program
         else
         {
             person = list.Find(x => x.Id == ProvideValidInt());
+            activeRepo.PopulateChildrenOf(person);
         }
 
         if (person != null)
@@ -269,7 +271,7 @@ internal class Program
         }
     }
 
-    private static void Delete(ref Person toBeDeleted)
+    private static void Delete(ref Person? toBeDeleted)
     {
         Console.WriteLine($"Are you sure you want to delete {toBeDeleted}? This is irreversible. [y/n]");
         bool exit = false;
@@ -278,7 +280,7 @@ internal class Program
             switch (ProvideValidString().ToLower())
             {
                 case "y":
-                    activeRepo.Delete(toBeDeleted);
+                    activeRepo.Delete(toBeDeleted!);
                     toBeDeleted = null;
                     exit = true;
                     break;
@@ -322,7 +324,7 @@ internal class Program
         DateOnly? currentDate = editDeath ? person.DeathDate : person.BirthDate;
         DateOnly newDate;
 
-        if (currentDate is not null)
+        if (currentDate != null)
         {
             Console.WriteLine($"The current date of {dateName} of {person} is {currentDate}.");
         }
@@ -365,7 +367,7 @@ internal class Program
             currentParent = child.Mother?.ToString();
         }
 
-        if (currentParent is not null)
+        if (currentParent != null)
         {
             Console.WriteLine($"The current {parentType} of {child} is {currentParent}. Please select the method of providing the new one:");
         }
@@ -375,9 +377,9 @@ internal class Program
         }
 
         newParent = ProvidePerson();
-        if (newParent is not null)
+        if (newParent != null)
         {
-            child.SetOrDeleteParent(newParent);
+            child.SetParent(newParent);
             Console.WriteLine($"{newParent} set as new {parentType} of {child}.");
         }
     }
@@ -388,6 +390,7 @@ internal class Program
         string deleteDescription;
         bool exit = false;
         Person? child;
+        Person? newChild;
 
         while (!exit)
         {
@@ -403,7 +406,12 @@ internal class Program
             {
                 case 1:
                     Console.WriteLine("Select the source of the new child:");
-                    parent.Children.Add(ProvidePerson());
+                    newChild = ProvidePerson();
+                    if (newChild != null)
+                    {
+                        newChild.SetParent(parent);
+                        Console.WriteLine($"{newChild} set as new child of {parent}.");
+                    }
                     exit = true;
                     break;
                 case 2:
@@ -412,7 +420,7 @@ internal class Program
                     child = SearchById("Enter the id of the child to remove from the list:", list: parent.Children);
                     if (child != null)
                     {
-                        child.SetOrDeleteParent(parent.Gender);
+                        child.DeleteParent(parent.Gender);
                         exit = true;
                     }
                     break;

@@ -10,4 +10,5 @@ public interface IRepo
     public void Delete(Person toBeDeleted);
     public void Add(Person newPerson);
     public void Save();
+    public void PopulateChildrenOf(Person? person) { }
 }

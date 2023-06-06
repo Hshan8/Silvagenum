@@ -58,12 +58,12 @@ public static class PersonExtensions
         return IsValidAsParentOf(father, child, Gender.male);
     }
 
-    public static void SetOrDeleteParent(this Person child, Person parent)
+    public static void SetParent(this Person child, Person parent)
     {
         SetOrDeleteParent(child, parent, parent.Gender);
     }
 
-    public static void SetOrDeleteParent(this Person child, Gender gender)
+    public static void DeleteParent(this Person child, Gender gender)
     {
         SetOrDeleteParent(child, null, gender);
     }

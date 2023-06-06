@@ -1,4 +1,6 @@
-﻿namespace SilvagenumLogic;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SilvagenumLogic;
 
 public enum Gender
 {
@@ -9,7 +11,7 @@ public enum Gender
 
 public class Person
 {
-    public int Id { get; private set; }
+    public int Id { get; set; }
     public Gender Gender { get; set; }
     public string Name { get; set; }
     public string? Surname { get; set; }
@@ -17,20 +19,26 @@ public class Person
 
     public DateOnly? BirthDate { get; set; }
     public DateOnly? DeathDate { get; set; }
-    public List<Person> Children { get; } = new List<Person>();
+    public List<Person> Children { get; private set; } = new List<Person>();
 
     private Person? _father;
     private Person? _mother;
+    [NotMapped]
     private static int personCount = 0;     //instance counter serving as a reference for the Id
-    private Person? parent;
 
-    public Person(string firstName, Gender gender)
+    public Person(string name, Gender gender)
     {
-        Name = firstName;
-        personCount++;
-        Id = personCount;
+        Name = name;
         Gender = gender;
+        if (Config.GenerateIdsInternally)
+        {
+            personCount++;
+            Id = personCount;
+        }
     }
+
+    [ForeignKey(nameof(Father))]
+    public int? FatherId { get; set; }
 
     public Person? Father
     {
@@ -50,6 +58,10 @@ public class Person
             }
         }
     }
+
+    [ForeignKey(nameof(Mother))]
+    public int? MotherId { get; set; }
+
     public Person? Mother
     {
         get { return _mother; }
