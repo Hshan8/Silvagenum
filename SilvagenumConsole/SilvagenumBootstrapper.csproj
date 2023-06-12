@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SilvagenumData\SilvagenumData.csproj" />
     <ProjectReference Include="..\SilvagenumLogic\SilvagenumLogic.csproj" />
+    <ProjectReference Include="..\SilvagenumUI\SilvagenumUI.csproj" />
   </ItemGroup>
 
 </Project>
