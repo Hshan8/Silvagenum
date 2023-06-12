@@ -1,5 +1,6 @@
 ﻿using SilvagenumData;
 using SilvagenumLogic;
+using System;
 
 internal class Program
 {
@@ -22,10 +23,11 @@ internal class Program
         Console.WriteLine("Welcome to the Silvagenum app!");
 
         void DisplayAllHandle(Person selectedPerson) => DisplayAll(activeRepo.GetAll(), "The repository is empty.");
-        void SearchIdHandle(Person selectedPerson) => returnedPerson = SearchById("Enter the id to search for:");
+        void SearchIdHandle(Person selectedPerson) => returnedPerson = SearchById();
         void SearchNameHandle(Person selectedPerson) => returnedPerson = SearchByName();
         void AddPersonHandle(Person selectedPerson) => returnedPerson = AddNewPerson();
         void InteractHandle(Person selectedPerson) => position = Menu.Interact;
+        void ShowDetailsHandle(Person selectedPerson) => Console.WriteLine(selectedPerson.ToString(LevelOfDetail.detailed));
         void EditHandle(Person selectedPerson) => position = Menu.Edit;
         void DeleteHandle(Person? selectedPerson)
         {
@@ -61,7 +63,7 @@ internal class Program
                 case Menu.Interact:
                     back = DisplayMenu(GenerateDescription(position, selectedPerson),
                                        selectedPerson,
-                                       ShowDetails,
+                                       ShowDetailsHandle,
                                        EditHandle,
                                        DeleteHandle);
                     if (back) position = Menu.MainWithSelectedPerson;
@@ -168,51 +170,33 @@ internal class Program
         else { Console.WriteLine(emptySourceMessage); }
     }
 
-    private static Person? SearchById(string description, List<Person>? list = null)
+    private static Person? SearchById()
     {
-        Console.WriteLine(description);
-
-        Person? person = null;
-        if (list == null)
-        {
-            person = activeRepo.Get(ProvideValidInt());
-        }
-        else
-        {
-            person = list.Find(x => x.Id == ProvideValidInt());
-            activeRepo.PopulateChildrenOf(person);
-        }
-
-        if (person != null)
-        {
-            Console.WriteLine($"Person found: {person}");
-        }
-        else
-        {
-            Console.WriteLine("No person found!");
-        }
+        Console.WriteLine("Enter the id to search for:");
+        Person? person = activeRepo.Get(ProvideValidInt());
+        DescribeSearchResults(person);
         return person;
     }
-
+    private static Person? SearchById(string description, List<Person> list)
+    {
+        Console.WriteLine(description);
+        Person? person = list.Find(x => x.Id == ProvideValidInt());
+        activeRepo.PopulateChildrenOf(person);
+        DescribeSearchResults(person);
+        return person;
+    }
+    
     private static Person? SearchByName()
     {
         Console.WriteLine("Enter the name to search for (case insensitive):");
 
         List<Person>? list = activeRepo.Get(ProvideValidString());
 
-        if (list is null || list?.Count == 0)
+        DescribeSearchResults(list);
+        if (!(list?.Count > 1))
         {
-            Console.WriteLine("No person found!");
-            return null;
+            return list?[0];
         }
-
-        if (list?.Count == 1)
-        {
-            Console.WriteLine($"Person found: {list[0]}");
-            return list[0];
-        }
-
-        Console.WriteLine($"Found multiple results:");
         DisplayAll(list!);
 
         Console.WriteLine("\n 1 - Select a person from the list by id"
@@ -224,6 +208,13 @@ internal class Program
         }
         return null;
     }
+
+    private static string DescribeSearchResults(Person? person) => person switch
+    {
+        null => "No person found!",
+        _ => $"Person found: {person}"
+    };
+    private static string DescribeSearchResults(List<Person>? list) => !(list?.Count > 1) ? DescribeSearchResults(person: list?[0]) : $"Found multiple results:";
 
     private static Person AddNewPerson()
     {
@@ -237,21 +228,6 @@ internal class Program
         activeRepo.Add(newPerson);
         Console.WriteLine($"New person added: {newPerson}");
         return newPerson;
-    }
-
-    public static void ShowDetails(Person person)
-    {
-        Console.WriteLine(person);
-        Console.WriteLine(person.Gender);
-
-        string? livingUntil = person.DeathDate?.ToString();
-        Console.WriteLine($"Living: {person.BirthDate} - {livingUntil ?? "today"}");
-
-        string? fatherName = person.Father?.ToString();
-        Console.WriteLine($"Father: {fatherName ?? "undefined"}");
-
-        string? motherName = person.Mother?.ToString();
-        Console.WriteLine($"Mother: {motherName ?? "undefined"}\n");
     }
 
     private static Gender SelectGender()
@@ -294,26 +270,18 @@ internal class Program
         }
     }
 
-    private static void EditFirstName(Person person) => EditName(person);
-    private static void EditSurname(Person person) => EditName(person, true);
-    private static void EditName(Person person, bool editSurname = false)
+    private static void EditFirstName(Person person)
     {
-        string sur = editSurname ? "sur" : "";
+        Console.WriteLine($"Please enter the new name of {person}:");
+        person.Name = ProvideValidString();
+        Console.WriteLine($"The name of {person} was successfully changed.");
+    }
 
-        Console.WriteLine($"Please enter the new {sur}name of {person}:");
-
-        string input = ProvideValidString();
-
-        if (editSurname)
-        {
-            person.Surname = input;
-        }
-        else
-        {
-            person.Name = input;
-        }
-
-        Console.WriteLine($"The {sur}name of {person} was successfully changed.");
+    private static void EditSurname(Person person)
+    {
+        Console.WriteLine($"Please enter the new surname of {person}:");
+        person.Surname = ProvideValidString();
+        Console.WriteLine($"The surname of {person} was successfully changed.");
     }
 
     private static void EditBirthDate(Person person) => EditDate(person);
@@ -437,18 +405,17 @@ internal class Program
     private static Person? ProvidePerson()
     {
         Person? result = null;
-        string description = " 1 - Search person by ID"
-                             + "\n 2 - Search person by name"
-                             + "\n 3 - Add a new person"
-                             + "\n\n 0 - Cancel";
-        void searchIdHandle(Person person) => result = SearchById("Enter the id to search for:");
+        void searchIdHandle(Person person) => result = SearchById();
         void searchNameHandle(Person person) => result = SearchByName();
         void addNewHandle(Person person) => result = AddNewPerson();
 
         bool exit = false;
         while (!exit)
         {
-            exit = DisplayMenu(description,
+            exit = DisplayMenu(" 1 - Search person by ID"
+                             + "\n 2 - Search person by name"
+                             + "\n 3 - Add a new person"
+                             + "\n\n 0 - Cancel",
                                null,
                                searchIdHandle,
                                searchNameHandle,

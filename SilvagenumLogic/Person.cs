@@ -1,12 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SilvagenumLogic;
 
 public enum Gender
 {
     male,
-    female,
-    UNASSIGNED
+    female
+}
+
+public enum LevelOfDetail
+{
+    simple,
+    detailed
 }
 
 public class Person
@@ -81,5 +87,18 @@ public class Person
         }
     }
 
-    public override string ToString() => $"{FullName} (#{Id})";
+    public override string ToString() => ToString(LevelOfDetail.simple);
+    public string ToString(LevelOfDetail levelOfDetail)
+    {
+        return levelOfDetail switch
+        {
+            LevelOfDetail.simple => $"{FullName} (#{Id})",
+            LevelOfDetail.detailed => $"{this}\n"
+                            + $"{Gender}\n"
+                            + $"Living: {BirthDate} - {(DeathDate?.ToString()) ?? "today"}\n"
+                            + $"Father: {(Father?.ToString()) ?? "undefined"}\n"
+                            + $"Mother: {(Mother?.ToString()) ?? "undefined"}\n",
+            _ => $"{FullName} (#{Id})",
+        };
+    }
 }
