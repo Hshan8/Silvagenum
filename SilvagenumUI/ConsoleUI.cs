@@ -2,7 +2,7 @@
 using SilvagenumLogic;
 
 namespace SilvagenumUI;
-public class ConsoleUI
+public class ConsoleUI : IUserInterface
 {
     private readonly IRepo activeRepo;
     delegate void Del(Person person);
