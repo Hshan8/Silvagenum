@@ -1,4 +1,6 @@
-﻿namespace SilvagenumLogic;
+﻿using System.Reflection;
+
+namespace SilvagenumLogic;
 
 public static class PersonExtensions
 {
@@ -84,19 +86,21 @@ public static class PersonExtensions
     {
         person.Father = null;
         person.Mother = null;
-        if (person.Gender == Gender.male)
+        foreach (Person child in person.Children)
         {
-            foreach (Person child in person.Children)
-            {
-                child.Father = null;
-            }
-        }
-        else
-        {
-            foreach (Person child in person.Children)
-            {
-                child.Mother = null;
-            }
+            child.DeleteParent(person.Gender);
         }
     }
+
+    public static string DescribeParent(this Person child, Gender gender)
+    {
+        Person? parent = gender == Gender.male ? child.Father : child.Mother;
+        if (parent == null)
+        {
+            return $"There is no {gender.ParentTerm()} currently set for {child}.";
+        }
+        return $"The current {gender.ParentTerm()} of {child} is {parent}.";
+    }
+
+    public static string ParentTerm(this Gender gender) => gender == Gender.male ? "father" : "mother";
 }

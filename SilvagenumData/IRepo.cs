@@ -8,7 +8,7 @@ public interface IRepo
     public Person? Get(int id);
     public List<Person>? Get(string name);
     public void Delete(Person toBeDeleted);
-    public void Add(Person newPerson);
+    public Person Add(string firstName, Gender gender);
     public void Save();
     public void PopulateChildrenOf(Person? person) { }
 }

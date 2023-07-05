@@ -28,18 +28,11 @@ public class Person
 
     private Person? _father;
     private Person? _mother;
-    [NotMapped]
-    private static int personCount = 0;     //instance counter serving as a reference for the Id
 
     public Person(string name, Gender gender)
     {
         Name = name;
         Gender = gender;
-        if (Config.GenerateIdsInternally)
-        {
-            personCount++;
-            Id = personCount;
-        }
     }
 
     [ForeignKey(nameof(Father))]

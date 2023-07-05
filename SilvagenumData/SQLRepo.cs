@@ -10,10 +10,12 @@ public class SQLRepo : IRepo
         _context = new SQLContext();
         _context.Database.EnsureCreated();          //for testing and demos? replace with some real-life solution?
     }
-    public void Add(Person newPerson)
+    public Person Add(string firstName, Gender gender)
     {
-        _context.People.Add(newPerson);
+        Person person = new(firstName, gender);
+        _context.People.Add(person);
         _context.SaveChanges();
+        return person;
     }
 
     public void Delete(Person toBeDeleted)

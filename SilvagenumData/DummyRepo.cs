@@ -4,6 +4,7 @@ namespace SilvagenumData;
 public class DummyRepo : IRepo
 {
     private readonly List<Person>? content;
+    private static int idCounter = 0;
 
     public DummyRepo()
     {
@@ -15,6 +16,7 @@ public class DummyRepo : IRepo
             new Person("Kunegunda", Gender.female),
             new Person("Zygryd", Gender.male)
         };
+        idCounter = 5;
     }
 
     public List<Person> GetAll() => content!;
@@ -36,9 +38,13 @@ public class DummyRepo : IRepo
         content!.Remove(toBeDeleted);
     }
 
-    public void Add(Person newPerson)
+    public Person Add(string firstName, Gender gender)
     {
-        content!.Add(newPerson);
+        Person person = new(firstName, gender);
+        idCounter++;
+        person.Id = idCounter;
+        content!.Add(person);
+        return person;
     }
 
     public void Save()

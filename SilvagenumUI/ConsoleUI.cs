@@ -229,8 +229,7 @@ public class ConsoleUI : IUserInterface
         Console.WriteLine("Select the gender of the new person - [m]ale or [f]emale:");
         Gender gender = SelectGender();
 
-        Person newPerson = new(name, gender);
-        activeRepo.Add(newPerson);
+        Person newPerson = activeRepo.Add(name, gender);
         Console.WriteLine($"New person added: {newPerson}");
         return newPerson;
     }
@@ -255,19 +254,16 @@ public class ConsoleUI : IUserInterface
     private void Delete(ref Person? toBeDeleted)
     {
         Console.WriteLine($"Are you sure you want to delete {toBeDeleted}? This is irreversible. [y/n]");
-        bool exit = false;
-        while (!exit)
+        while (true)
         {
             switch (ProvideValidString().ToLower())
             {
                 case "y":
                     activeRepo.Delete(toBeDeleted!);
                     toBeDeleted = null;
-                    exit = true;
-                    break;
+                    return;
                 case "n":
-                    exit = true;
-                    break;
+                    return;
                 default:
                     Console.WriteLine("Incorrect input, please try again.");
                     break;
@@ -325,35 +321,13 @@ public class ConsoleUI : IUserInterface
     private void EditMother(Person child) => EditParent(child, Gender.female);
     private void EditParent(Person child, Gender gender)
     {
-        string parentType;
-        string? currentParent;
-        Person? newParent;
-
-        if (gender == Gender.male)
-        {
-            parentType = "father";
-            currentParent = child.Father?.ToString();
-        }
-        else
-        {
-            parentType = "mother";
-            currentParent = child.Mother?.ToString();
-        }
-
-        if (currentParent != null)
-        {
-            Console.WriteLine($"The current {parentType} of {child} is {currentParent}. Please select the method of providing the new one:");
-        }
-        else
-        {
-            Console.WriteLine($"There is no {parentType} currently set for {child}. Please select the method of providing one:");
-        }
-
-        newParent = ProvidePerson();
+        child.DescribeParent(gender);
+        Console.WriteLine("Please select the method of providing one:");
+        Person? newParent = ProvidePerson();
         if (newParent != null)
         {
             child.SetParent(newParent);
-            Console.WriteLine($"{newParent} set as new {parentType} of {child}.");
+            Console.WriteLine($"{newParent} set as new {gender.ParentTerm()} of {child}.");
         }
     }
 
