@@ -1,0 +1,19 @@
+﻿@model Person
+
+<div class="col">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="d-grid">
+            </h4>
+
+            <div class="d-flex justify-content-between mt-2">
+                <h2 class="text-start">
+                    <a class="link" asp-controller="People" asp-action="Details" asp-route-id="@Model.Id">@Model</a>
+                </h2>
+                <h5 class="text-nowrap">
+                    @Model.BirthDate.ToString()
+                </h5>
+            </div>
+        </div>
+    </div>
+</div>

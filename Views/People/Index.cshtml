@@ -1,0 +1,7 @@
+﻿@model PersonListViewModel
+
+<h1>@Model.CurrentTree</h1>
+@foreach(var person in Model.People)
+{
+    <partial name="_PersonCard" model="person"/>
+}
