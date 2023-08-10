@@ -46,7 +46,7 @@ public class SQLRepo : IRepo
         _context.SaveChanges();
     }
 
-    public void PopulateChildrenOf(Person? person)
+    private void PopulateChildrenOf(Person? person)
     {
         person?.Children.AddRange(_context.People.Where(x => x.FatherId == person.Id || x.MotherId == person.Id).ToList());
     }

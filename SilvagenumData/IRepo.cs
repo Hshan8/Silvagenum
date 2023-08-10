@@ -10,5 +10,4 @@ public interface IRepo
     public void Delete(Person toBeDeleted);
     public Person Add(string firstName, Gender gender);
     public void Save();
-    public void PopulateChildrenOf(Person? person) { }
 }

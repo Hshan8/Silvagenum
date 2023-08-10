@@ -175,18 +175,15 @@ public class ConsoleUI : IUserInterface
         else { Console.WriteLine(emptySourceMessage); }
     }
 
-    private Person? SearchById()
-    {
-        Console.WriteLine("Enter the id to search for:");
-        Person? person = activeRepo.Get(ProvideValidInt());
-        DescribeSearchResults(person);
-        return person;
-    }
-    private Person? SearchById(string description, List<Person> list)
+    private Person? SearchById(string description = "Enter the id to search for:", List<Person>? list = null)
     {
         Console.WriteLine(description);
-        Person? person = list.Find(x => x.Id == ProvideValidInt());
-        activeRepo.PopulateChildrenOf(person);
+        int id = ProvideValidInt();
+        Person? person = null;
+        if (list?.Exists(x => x.Id == id) ?? true)
+        {
+            person = activeRepo.Get(id);
+        }
         DescribeSearchResults(person);
         return person;
     }
@@ -209,7 +206,7 @@ public class ConsoleUI : IUserInterface
 
         if (ProvideValidInt(maxValid: 1) == 1)
         {
-            return SearchById("Enter the id to select from the list:", list: list);
+            return SearchById("Enter the id to select from the list:", list);
         }
         return null;
     }

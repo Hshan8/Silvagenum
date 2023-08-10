@@ -8,15 +8,12 @@ public class DummyRepo : IRepo
 
     public DummyRepo()
     {
-        content = new List<Person>()
-        {
-            new Person("Dumbo", Gender.male),
-            new Person("Stefan", Gender.male),
-            new Person("Genowefa", Gender.female),
-            new Person("Kunegunda", Gender.female),
-            new Person("Zygryd", Gender.male)
-        };
-        idCounter = 5;
+        content = new List<Person>();
+        Add("Dumbo", Gender.male);
+        Add("Stefan", Gender.male);
+        Add("Genowefa", Gender.female);
+        Add("Kunegunda", Gender.female);
+        Add("Zygryd", Gender.male);
     }
 
     public List<Person> GetAll() => content!;

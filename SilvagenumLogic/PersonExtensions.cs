@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace SilvagenumLogic;
+﻿namespace SilvagenumLogic;
 
 public static class PersonExtensions
 {
