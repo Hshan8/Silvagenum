@@ -6,7 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IRepo, SQLRepo>();
 
-// Add services to the container.
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
@@ -17,6 +16,9 @@ builder.Services.AddDbContext<SQLContext>(options =>
     options.UseSqlServer(
         builder.Configuration["ConnectionStrings:SQLContextConnection"]);
 });
+
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
 
 var app = builder.Build();
 
@@ -38,6 +40,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapBlazorHub();
+app.MapFallbackToPage("/app/{*catchall}", "/App/Index");
 
 SQLInitializer.Seed(app);
 app.Run();

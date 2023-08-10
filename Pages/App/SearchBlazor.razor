@@ -1,0 +1,29 @@
+﻿@page "/app/search"
+@page "/app"
+
+<div class="my-5">
+    <h3 class="mb-4">
+        Enter the name you want to search
+    </h3>
+    <input @bind-value="SearchText"
+           @bind-value:event="oninput" placeholder="Search people by name" @onkeyup="Search" />
+</div>
+
+@if (!FilteredPeople.Any())
+{
+    <p>Nothing to show, sorry...</p>
+    @if (SearchText.Length < 3)
+    {
+        <p>Make sure to enter at least 3 characters to search!</p>
+    }
+}
+else
+{
+    <div class="p-2 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+        @foreach (var person in FilteredPeople)
+        {
+            <PersonCard Person=@person></PersonCard>
+        }
+    </div>
+}
+

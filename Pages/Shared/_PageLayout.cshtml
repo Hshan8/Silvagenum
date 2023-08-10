@@ -30,10 +30,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="People" asp-action="Create">Add a person</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="People" asp-action="Search">Search (API)</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/App/Index">Search (Blazor)</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="People" asp-action="Search">Search</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Contact" asp-action="Index">Contact</a>
@@ -59,7 +56,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - SilvagenumWebApp
+            &copy; 2023 - SilvagenumWebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
