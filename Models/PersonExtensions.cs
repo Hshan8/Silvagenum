@@ -3,7 +3,6 @@
 public enum LevelOfDetail
 {
     simple,
-    lifetime,
     detailed
 }
 
@@ -125,7 +124,6 @@ public static class PersonExtensions
         return levelOfDetail switch
         {
             LevelOfDetail.simple => $"{person}",
-            LevelOfDetail.lifetime => $"Living: {(person.BirthDate?.ToString()) ?? "?"} - {(person.DeathDate?.ToString()) ?? "?"}",
             LevelOfDetail.detailed => $"{person}\n"
                             + $"{person.Gender}\n"
                             + $"Living: {person.BirthDate} - {(person.DeathDate?.ToString()) ?? "today"}\n"
