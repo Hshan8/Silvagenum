@@ -1,13 +1,13 @@
 ﻿@model Person
 
-<h3 class="my-5">
-    @Model?.FullName
-</h3>
 
 <div class="row gx-5">
     <div class="col-7">
+        <h2 class="my-5">
+            @Model?.FullName
+        </h2>
         <h4>@Model?.Gender.ToString()</h4>
-        <p>@Model?.BirthDate</p>
+        <h4>@Model?.ToString(LevelOfDetail.lifetime)</h4>
 
         <form method="post" asp-action="Delete">
             <a asp-controller="People" asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-secondary">Edit</a>
