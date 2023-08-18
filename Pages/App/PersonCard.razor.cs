@@ -7,5 +7,15 @@ namespace SilvagenumWebApp.Pages.App
     {
         [Parameter]
         public Person? Person { get; set; }
+        [Parameter]
+        public string? SelectionType { get; set; }
+        [Parameter]
+        public int? RelatedId { get; set; }
+
+        protected override void OnParametersSet()
+        {
+            SelectionType ??= "";
+            RelatedId ??= 0;
+        }
     }
 }

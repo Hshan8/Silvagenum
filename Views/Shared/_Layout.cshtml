@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SilvagenumWebApp</title>
+    <base href="/" />
     <script src="~/lib/jquery/jquery.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
     <script src="~/lib/jquery-validate/jquery.validate.js"></script>
@@ -33,7 +34,10 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="People" asp-action="Search">Search (API)</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/App/Index">Search (Blazor)</a>
+                            <a class="nav-link text-dark" href="app/search">Search (Blazor)</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="app/mother">Parameter wizardry</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Contact" asp-action="Index">Contact</a>

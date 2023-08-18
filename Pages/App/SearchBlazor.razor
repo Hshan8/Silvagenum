@@ -1,9 +1,11 @@
-﻿@page "/app/search"
+﻿@page "/app/{selectiontype}/{relatedid:int?}"
+@page "/app/{selectiontype}"
+@page "/app/search"
 @page "/app"
 
 <div class="my-5">
     <h3 class="mb-4">
-        Enter the name you want to search
+        Enter the name you want to search @SelectionType
     </h3>
     <input @bind-value="SearchText"
            @bind-value:event="oninput" placeholder="Search people by name" @onkeyup="Search" />
@@ -22,7 +24,7 @@ else
     <div class="p-2 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
         @foreach (var person in FilteredPeople)
         {
-            <PersonCard Person=@person></PersonCard>
+            <PersonCard Person=@person SelectionType="@SelectionType" RelatedId="RelatedId"></PersonCard>
         }
     </div>
 }
