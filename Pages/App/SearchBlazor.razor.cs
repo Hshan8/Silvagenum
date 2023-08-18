@@ -29,7 +29,7 @@ namespace SilvagenumWebApp.Pages.App
             {
                 if (SearchText.Length >= 3)
                 {
-                    FilteredPeople = Repo.Get(SearchText)?.ToList() ?? FilteredPeople;
+                    FilteredPeople = Repo.Get(SearchText);
                 }
                 /*if (SelectionType == "mother")
                 {

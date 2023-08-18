@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SilvagenumWebApp.Models;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Connections;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,8 +41,13 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapBlazorHub();
-app.MapFallbackToPage("/app/{*catchall}", "/App/Index");
+//app.MapBlazorHub();
+//app.MapFallbackToPage("/app/{*catchall}", "/App/Index");
+app.MapBlazorHub(configureOptions: options =>
+{
+    options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
+});
+app.MapFallbackToController("Blazor", "Home");
 
 SQLInitializer.Seed(app);
 app.Run();
