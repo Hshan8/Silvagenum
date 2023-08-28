@@ -1,7 +1,9 @@
 ﻿@model PersonListViewModel
+@using SilvagenumWebApp.Pages.App
 
 <h1>@Model.CurrentTree</h1>
 @foreach(var person in Model.People)
 {
-    <partial name="_PersonCard" model="person"/>
+    <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=person/>
+    <script src="_framework/blazor.webassembly.js"></script>
 }

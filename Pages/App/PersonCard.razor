@@ -6,7 +6,7 @@
 
             <div class="d-flex justify-content-between mt-2">
                 <h2 class="text-start">
-                    <a class="link" asp-controller="People" asp-action="Details" asp-route-id="@Person?.Id">@Person</a>
+                    <a href="People/Details/@Person?.Id">@Person</a>
                 </h2>
                 <h5 class="text-nowrap">
                     @SelectionType

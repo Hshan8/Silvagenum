@@ -29,7 +29,15 @@ namespace SilvagenumWebApp.Pages.App
             if (Repo is not null)
             {
                 if (SearchText.Length >= 3)
-                    FilteredPeople = Repo.Get(SearchText).ToList();
+                    FilteredPeople = Repo.Get(SearchText)!;
+                if (SelectionType == "mother")
+                {
+                    FilteredPeople = FilteredPeople.Where(p => p.Gender == Gender.female && p.Id != RelatedId).ToList();
+                }
+                else if (SelectionType == "father")
+                {
+                    FilteredPeople = FilteredPeople.Where(p => p.Gender == Gender.male && p.Id != RelatedId).ToList();
+                }
             }
         }
     }
