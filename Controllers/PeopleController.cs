@@ -44,7 +44,7 @@ namespace SilvagenumWebApp.Controllers
         }
         #endregion
 
-        #region Edit
+        #region Edit & relations
         public IActionResult Edit(int? id)
         {
             if (id == null)
@@ -78,6 +78,42 @@ namespace SilvagenumWebApp.Controllers
             }
             return View(person);
         }
+
+        public IActionResult EditRelation(int childId, int parentId, string type)
+        {
+            Gender gender = Gender.male;
+            bool backToChild = false;
+            switch (type)
+            {
+                case "mother":
+                    gender = Gender.female;
+                    break;
+                case "father":
+                    break;
+                case "child":
+                    backToChild = true;
+                    break;
+                default: break;
+            }
+            return EditRelation(_personRepo.Get(childId)!, _personRepo.Get(parentId), gender, backToChild);         //null?
+        }
+
+        private IActionResult EditRelation(Person child, Person? parent, Gender gender, bool backToChild = true)
+        {
+            if (parent is null) backToChild = true;
+            IActionResult result = RedirectToAction(nameof(Details), new { id = backToChild ? child.Id : parent!.Id });
+
+            try
+            {
+                _personRepo.SetRelation(child, parent, gender);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Updating the person failed, please try again. Error: {ex.Message}";
+            }
+
+            return result;
+        }
         #endregion
 
         #region Delete
@@ -95,7 +131,7 @@ namespace SilvagenumWebApp.Controllers
             {
                 TempData["Error"] = $"Deleting the person failed, please try again. Error: {ex.Message}";
             }
-            
+
             return RedirectToAction(nameof(Index));         //catch concurrency exception; if none return to the person view
         }
         #endregion

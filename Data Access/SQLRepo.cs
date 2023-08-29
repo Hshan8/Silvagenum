@@ -32,36 +32,33 @@ public class SQLRepo : IRepo
 
     public void Update(Person toBeUpdated)
     {
-        Person? updatedPerson = _context.People.FirstOrDefault(p => p.Id == toBeUpdated.Id);
-        if (updatedPerson != null)
-        {
-            updatedPerson.Name = toBeUpdated.Name;
-            updatedPerson.Surname = toBeUpdated.Surname;
-            updatedPerson.Gender = toBeUpdated.Gender;
-            updatedPerson.BirthDate = toBeUpdated.BirthDate;
-            updatedPerson.DeathDate = toBeUpdated.DeathDate;
+        Person? updatedPerson = _context.People.FirstOrDefault(p => p.Id == toBeUpdated.Id) ?? throw new ArgumentException("The person to update could not be found.");
 
-            _context.People.Update(updatedPerson);
-            Save();
-        }
-        else
-        {
-            throw new ArgumentException("The person to update could not be found.");
-        }
+        updatedPerson.Name = toBeUpdated.Name;
+        updatedPerson.Surname = toBeUpdated.Surname;
+        updatedPerson.Gender = toBeUpdated.Gender;
+        updatedPerson.BirthDate = toBeUpdated.BirthDate;
+        updatedPerson.DeathDate = toBeUpdated.DeathDate;
+
+        _context.People.Update(updatedPerson);
+        Save();
+    }
+
+    public void SetRelation(Person child, Person? parent, Gender gender)
+    {
+        child.SetOrDeleteParent(parent, gender);
+        _context.People.Update(child);
+        Save();
     }
 
     public void Delete(Person toBeDeleted)
     {
-        if (toBeDeleted != null)
-        {
-            toBeDeleted.DeleteAllRelations();
-            _context.People.Remove(toBeDeleted);
-            Save();
-        }
-        else
-        {
+        if (toBeDeleted == null)
             throw new ArgumentException("The person to delete could not be found.");
-        }
+        
+        toBeDeleted.DeleteAllRelations();
+        _context.People.Remove(toBeDeleted);
+        Save();
     }
 
     public void Save() => _context.SaveChanges();

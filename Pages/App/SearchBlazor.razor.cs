@@ -1,6 +1,5 @@
 ﻿using SilvagenumWebApp.Models;
 using Microsoft.AspNetCore.Components;
-using System.ComponentModel.Design;
 
 namespace SilvagenumWebApp.Pages.App
 {

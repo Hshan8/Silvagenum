@@ -1,17 +1,38 @@
 ﻿<div class="col">
     <div class="card">
         <div class="card-body">
-            <h4 class="d-grid">
-            </h4>
-
             <div class="d-flex justify-content-between mt-2">
                 <h2 class="text-start">
-                    <a href="People/Details/@Person?.Id">@Person</a>
+                    <a href="People/Details/@Person!.Id">@Person</a>
                 </h2>
-                <h5 class="text-nowrap">
-                    @SelectionType
-                    @RelatedId
-                </h5>
+                <div class="text-nowrap">
+                    @switch (SelectionType)
+                    {
+                        case "mother":
+                            <p>mom</p>
+                            <a href="People/EditRelation/@RelatedId/@Person.Id/mother" class="btn btn-secondary">Link</a>
+                            break;
+                        case "father":
+                            <p>dad</p>
+                            <a href="People/EditRelation/@RelatedId/@Person.Id/father" class="btn btn-secondary">Link</a>
+                            break;
+                        case "child":
+                            <p>kid</p>
+                            <a href="People/EditRelation/@Person.Id/@RelatedId/child" class="btn btn-secondary">Link</a>
+                            break;
+                        case "unlink-mother":
+                            <p>del</p>
+                            break;
+                        case "unlink-father":
+                            <p>del</p>
+                            break;
+                        case "unlink-child":
+                            <p>del</p>
+                            break;
+                        default:
+                            break;
+                    }
+                </div>
             </div>
         </div>
     </div>

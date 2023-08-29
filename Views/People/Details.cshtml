@@ -1,13 +1,71 @@
 ﻿@model Person
 
 <h3 class="my-5">
-    @Model?.FullName
+    @Model.FullName
 </h3>
 
 <div class="row gx-5">
     <div class="col-7">
-        <h4>@Model?.Gender.ToString()</h4>
-        <p>@Model?.BirthDate</p>
+        <h4>@Model.Gender.ToString()</h4>
+        <p>@Model.BirthDate</p>
+
+        @if (Model.Father is not null)
+        {
+            <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=Model.Father/>
+            <script src="_framework/blazor.webassembly.js"></script>
+        }
+        else
+        {
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mt-2">
+                            <h2 class="text-start">
+                                <a href="app/father/@Model.Id">+ Add father</a>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.Mother is not null)
+        {
+            <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=Model.Mother/>
+            <script src="_framework/blazor.webassembly.js"></script>
+        }
+        else
+        {
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mt-2">
+                            <h2 class="text-start">
+                                <a href="app/mother/@Model.Id">+ Add mother</a>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        @foreach (var person in Model.Children)
+        {
+            <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=person/>
+            <script src="_framework/blazor.webassembly.js"></script>
+        }
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mt-2">
+                        <h2 class="text-start">
+                            <a href="app/child/@Model.Id">+ Add child</a>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <form method="post" asp-action="Delete">
             <a asp-controller="People" asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-secondary">Edit</a>

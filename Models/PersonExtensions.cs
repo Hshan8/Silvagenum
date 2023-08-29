@@ -75,17 +75,11 @@ public static class PersonExtensions
         return null;
     }
 
-    public static void SetParent(this Person child, Person parent)
-    {
-        SetOrDeleteParent(child, parent, parent.Gender);
-    }
+    public static void SetParent(this Person child, Person parent) => child.SetOrDeleteParent(parent, parent.Gender);
 
-    public static void DeleteParent(this Person child, Gender gender)
-    {
-        SetOrDeleteParent(child, null, gender);
-    }
+    public static void DeleteParent(this Person child, Gender gender) => child.SetOrDeleteParent(null, gender);
 
-    private static void SetOrDeleteParent(Person child, Person? parent, Gender gender)
+    public static void SetOrDeleteParent(this Person child, Person? parent, Gender gender)
     {
         if (gender == Gender.male)
         {

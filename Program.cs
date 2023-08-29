@@ -38,6 +38,9 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "relation",
+    pattern: "{controller=Home}/{action=Index}/{childId}/{parentId}/{type}");
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapBlazorHub();
