@@ -24,9 +24,17 @@ public static class PersonExtensions
         string? invalidReason = potentialParent?.IsValidAsParentOf(child, gender);
         if (invalidReason is null)
         {
-            oldParent?.Children.Remove(child);
+            //oldParent?.Children.Remove(child);
             newParent = potentialParent;
-            newParent?.Children.Add(child);
+            //newParent?.Children.Add(child);
+            if (gender == Gender.male)
+            {
+                child.FatherId = newParent?.Id;
+            }
+            else
+            {
+                child.MotherId = newParent?.Id;
+            }
             return newParent;
         }
         else

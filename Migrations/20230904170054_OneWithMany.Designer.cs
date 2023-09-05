@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SilvagenumWebApp.Models;
 
@@ -11,9 +12,11 @@ using SilvagenumWebApp.Models;
 namespace SilvagenumWebApp.Migrations
 {
     [DbContext(typeof(SQLContext))]
-    partial class SQLContextModelSnapshot : ModelSnapshot
+    [Migration("20230904170054_OneWithMany")]
+    partial class OneWithMany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,7 +63,9 @@ namespace SilvagenumWebApp.Migrations
 
                     b.HasIndex("FatherId");
 
-                    b.HasIndex("MotherId");
+                    b.HasIndex("MotherId")
+                        .IsUnique()
+                        .HasFilter("[MotherId] IS NOT NULL");
 
                     b.ToTable("People");
                 });
@@ -73,8 +78,8 @@ namespace SilvagenumWebApp.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("SilvagenumWebApp.Models.Person", "Mother")
-                        .WithMany()
-                        .HasForeignKey("MotherId")
+                        .WithOne()
+                        .HasForeignKey("SilvagenumWebApp.Models.Person", "MotherId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Father");

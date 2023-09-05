@@ -39,7 +39,8 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "relation",
-    pattern: "{controller=Home}/{action=Index}/{childId}/{parentId}/{type}");
+    pattern: "People/EditRelation/{childId}/{parentId}/{type}",
+    defaults: new { controller = "People", action = "EditRelation" });
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

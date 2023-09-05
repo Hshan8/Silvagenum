@@ -18,14 +18,14 @@ public class SQLContext : DbContext
     {
         modelBuilder.Entity<Person>()
             .HasOne(x => x.Father)
-            .WithOne()
-                .HasForeignKey<Person>(x => x.FatherId)
+            .WithMany()
+                .HasForeignKey(x => x.FatherId)
                 .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Person>()
             .HasOne(x => x.Mother)
-            .WithOne()
-                .HasForeignKey<Person>(x => x.MotherId)
+            .WithMany()
+                .HasForeignKey(x => x.MotherId)
                 .OnDelete(DeleteBehavior.NoAction);
 
         base.OnModelCreating(modelBuilder);

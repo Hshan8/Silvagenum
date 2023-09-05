@@ -1,17 +1,17 @@
 ﻿@model Person
 
-<h3 class="my-5">
+<h1 class="my-5">
     @Model.FullName
-</h3>
+</h1>
 
 <div class="row gx-5">
     <div class="col-7">
-        <h4>@Model.Gender.ToString()</h4>
+        <h2>@Model.Gender.ToString()</h2>
         <p>@Model.BirthDate</p>
 
         @if (Model.Father is not null)
         {
-            <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=Model.Father/>
+            <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=Model.Father param-SelectionType="@("unlink-father")" param-RelatedId=@Model.Id />
             <script src="_framework/blazor.webassembly.js"></script>
         }
         else
@@ -31,7 +31,7 @@
 
         @if (Model.Mother is not null)
         {
-            <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=Model.Mother/>
+            <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=Model.Mother param-SelectionType="@("unlink-mother")" param-RelatedId=@Model.Id />
             <script src="_framework/blazor.webassembly.js"></script>
         }
         else
@@ -49,10 +49,11 @@
             </div>
         }
 
+        <h3>Children</h3>
 
         @foreach (var person in Model.Children)
         {
-            <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=person/>
+            <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=person param-SelectionType="@("unlink-child")" param-RelatedId=@Model.Id />
             <script src="_framework/blazor.webassembly.js"></script>
         }
         <div class="col">

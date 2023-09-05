@@ -22,6 +22,8 @@ namespace SilvagenumWebApp.Controllers
             {
                 return NotFound();
             }
+            person.Father = _personRepo.Get(person.FatherId ?? 0);
+            person.Mother = _personRepo.Get(person.MotherId ?? 0);
             return View(person);
         }
         public IActionResult Search() => View();
@@ -79,19 +81,19 @@ namespace SilvagenumWebApp.Controllers
             return View(person);
         }
 
-        public IActionResult EditRelation(int childId, int parentId, string type)
+        public IActionResult EditRelation(int childId, int parentId, int type)
         {
             Gender gender = Gender.male;
-            bool backToChild = false;
+            bool backToChild = true;
             switch (type)
             {
-                case "mother":
+                case 0:
                     gender = Gender.female;
                     break;
-                case "father":
+                case 1:
                     break;
-                case "child":
-                    backToChild = true;
+                case 2:
+                    backToChild = false;
                     break;
                 default: break;
             }

@@ -46,7 +46,14 @@ public class SQLRepo : IRepo
 
     public void SetRelation(Person child, Person? parent, Gender gender)
     {
-        child.SetOrDeleteParent(parent, gender);
+        if (gender == Gender.male)
+        {
+            child.Father = parent;
+        }
+        else
+        {
+            child.Mother = parent;
+        }
         _context.People.Update(child);
         Save();
     }

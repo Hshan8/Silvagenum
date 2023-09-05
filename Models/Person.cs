@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace SilvagenumWebApp.Models;
 
@@ -38,6 +39,8 @@ public class Person
     [StringLength(50)]
     [DataType(DataType.Date)]
     public DateOnly? DeathDate { get; set; }
+    [JsonIgnore]
+    [NotMapped]
     public List<Person> Children { get; private set; } = new List<Person>();
 
 
