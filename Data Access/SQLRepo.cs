@@ -62,7 +62,8 @@ public class SQLRepo : IRepo
     {
         if (toBeDeleted == null)
             throw new ArgumentException("The person to delete could not be found.");
-        
+
+        PopulateChildrenOf(toBeDeleted);
         toBeDeleted.DeleteAllRelations();
         _context.People.Remove(toBeDeleted);
         Save();

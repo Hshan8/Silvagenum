@@ -83,38 +83,57 @@ namespace SilvagenumWebApp.Controllers
 
         public IActionResult EditRelation(int childId, int parentId, int type)
         {
+            Person? child = _personRepo.Get(childId);
+            Person? parent = _personRepo.Get(parentId);
             Gender gender = Gender.male;
-            bool backToChild = true;
-            switch (type)
-            {
-                case 0:
-                    gender = Gender.female;
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    backToChild = false;
-                    break;
-                default: break;
-            }
-            return EditRelation(_personRepo.Get(childId)!, _personRepo.Get(parentId), gender, backToChild);         //null?
-        }
-
-        private IActionResult EditRelation(Person child, Person? parent, Gender gender, bool backToChild = true)
-        {
-            if (parent is null) backToChild = true;
-            IActionResult result = RedirectToAction(nameof(Details), new { id = backToChild ? child.Id : parent!.Id });
+            int backId = 0;
 
             try
             {
+                if (child is null)
+                    throw new ArgumentNullException(nameof(childId));
+
+                switch (type)
+                {
+                    case 0:                     //link/unlink mother
+                        gender = Gender.female;
+                        backId = childId;
+                        break;
+                    case 1:                     //link/unlink father
+                        backId = childId;
+                        break;
+                    case 2:                     //link child
+                        if (parent is null)
+                            throw new ArgumentNullException(nameof(parentId));
+                        gender = parent.Gender;
+                        backId = parentId;
+                        break;
+                    case 3:                     //unlink child
+                        if (parent is null)
+                            throw new ArgumentNullException(nameof(parentId));
+                        gender = parent.Gender;
+                        backId = parentId;
+                        parent = null;
+                        break;
+                    default:
+                        break;
+                }
+
                 _personRepo.SetRelation(child, parent, gender);
+            }
+            catch (ArgumentNullException ex)
+            {
+                TempData["Error"] = $"Updating the person failed, please try again. The person of the given {ex.ParamName} could not be found.";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Updating the person failed, please try again. Error: {ex.Message}";
+                TempData["Error"] = $"Updating the person failed, please try again. Unexpected error occurred: {ex.Message}";
             }
 
-            return result;
+            if (backId == 0)
+                return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(nameof(Details), new { id = backId });
         }
         #endregion
 

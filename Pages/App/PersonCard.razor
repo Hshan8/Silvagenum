@@ -9,13 +9,13 @@
                     @switch (SelectionType)
                     {
                         case "mother":
-                            <a href="People/EditRelation/@RelatedId/@Person.Id/0" class="btn btn-secondary">Link</a>
+                            <a href="People/EditRelation/@RelatedId/@Person.Id/0" class="btn btn-secondary">Link as mother</a>
                             break;
                         case "father":
-                            <a href="People/EditRelation/@RelatedId/@Person.Id/1" class="btn btn-secondary">Link</a>
+                            <a href="People/EditRelation/@RelatedId/@Person.Id/1" class="btn btn-secondary">Link as father</a>
                             break;
                         case "child":
-                            <a href="People/EditRelation/@Person.Id/@RelatedId/2" class="btn btn-secondary">Link</a>
+                            <a href="People/EditRelation/@Person.Id/@RelatedId/2" class="btn btn-secondary">Link as child</a>
                             break;
                         case "unlink-mother":
                             <a href="People/EditRelation/@RelatedId/0/0" class="btn btn-secondary">Unlink</a>
@@ -24,7 +24,7 @@
                             <a href="People/EditRelation/@RelatedId/0/1" class="btn btn-secondary">Unlink</a>
                             break;
                         case "unlink-child":
-                            <a href="People/EditRelation/@Person.Id/@RelatedId/2" class="btn btn-secondary">Unlink</a>
+                            <a href="People/EditRelation/@Person.Id/@RelatedId/3" class="btn btn-secondary">Unlink</a>
                             break;
                         default:
                             break;

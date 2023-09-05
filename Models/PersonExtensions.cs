@@ -22,26 +22,22 @@ public static class PersonExtensions
     {
         Person? newParent;
         string? invalidReason = potentialParent?.IsValidAsParentOf(child, gender);
-        if (invalidReason is null)
-        {
-            //oldParent?.Children.Remove(child);
-            newParent = potentialParent;
-            //newParent?.Children.Add(child);
-            if (gender == Gender.male)
-            {
-                child.FatherId = newParent?.Id;
-            }
-            else
-            {
-                child.MotherId = newParent?.Id;
-            }
-            return newParent;
-        }
-        else
+        if (invalidReason is not null)
         {
             Console.WriteLine($"Incorrect assignment! {invalidReason}. {gender.ParentTerm()} left unchanged.\n");
             return oldParent;
         }
+
+        newParent = potentialParent;
+        if (gender == Gender.male)
+        {
+            child.FatherId = newParent?.Id;
+        }
+        else
+        {
+            child.MotherId = newParent?.Id;
+        }
+        return newParent;
     }
 
     private static string? IsValidAsParentOf(this Person parent, Person child, Gender gender)
@@ -83,29 +79,19 @@ public static class PersonExtensions
         return null;
     }
 
-    public static void SetParent(this Person child, Person parent) => child.SetOrDeleteParent(parent, parent.Gender);
-
-    public static void DeleteParent(this Person child, Gender gender) => child.SetOrDeleteParent(null, gender);
-
-    public static void SetOrDeleteParent(this Person child, Person? parent, Gender gender)
-    {
-        if (gender == Gender.male)
-        {
-            child.Father = parent;
-        }
-        else
-        {
-            child.Mother = parent;
-        }
-    }
-
     public static void DeleteAllRelations(this Person person)
     {
         person.Father = null;
         person.Mother = null;
-        foreach (Person child in person.Children)
+        if (person.Gender == Gender.male)
         {
-            child.DeleteParent(person.Gender);
+            foreach (Person child in person.Children)
+                child.Father = null;
+        }
+        else
+        {
+            foreach (Person child in person.Children)
+                child.Mother = null;
         }
     }
 
