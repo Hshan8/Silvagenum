@@ -21,6 +21,14 @@
 }
 else
 {
+    if (FilteredPeople.Count() == 1)
+    {
+        <p>Found 1 person matching the search:</p>
+    }
+    else
+    {
+        <p>Found @FilteredPeople.Count() people matching the search:</p>
+    }
     <div class="p-2 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
         @foreach (var person in FilteredPeople)
         {
@@ -28,4 +36,3 @@ else
         }
     </div>
 }
-

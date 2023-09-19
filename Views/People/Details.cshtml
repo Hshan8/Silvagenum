@@ -6,9 +6,10 @@
 
 <div class="row gx-5">
     <div class="col-7">
-        <h2>@Model.Gender.ToString()</h2>
+        <p>@Model.Gender.ToString()</p>
         <p>@Model.BirthDate</p>
 
+        <h2>Parents:</h2>
         @if (Model.Father is not null)
         {
             <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=Model.Father param-SelectionType="@("unlink-father")" param-RelatedId=@Model.Id />
@@ -49,7 +50,7 @@
             </div>
         }
 
-        <h3>Children</h3>
+        <h3>Children:</h3>
 
         @foreach (var person in Model.Children)
         {

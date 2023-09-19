@@ -13,7 +13,19 @@ namespace SilvagenumWebApp.Controllers
             _personRepo = personRepo;
         }
 
-        public IActionResult Index() => View(new PersonListViewModel(_personRepo.GetAll(), "List of all people in the repo"));
+        private readonly int pageSize = 6;            //temporary
+
+        public IActionResult Index(int? pageNumber)
+        {
+            pageNumber ??= 1;
+            PagedListViewModel<Person> list = new(
+                _personRepo.GetAll(pageNumber, pageSize), 
+                _personRepo.GetCount(), 
+                pageNumber.Value, 
+                pageSize,
+                "List of all the people in the database");
+            return View(list);
+        }
 
         public IActionResult Details(int id)
         {

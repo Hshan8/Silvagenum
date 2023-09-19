@@ -1,4 +1,6 @@
-﻿namespace SilvagenumWebApp.Models;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SilvagenumWebApp.Models;
 
 public class SQLRepo : IRepo
 {
@@ -10,6 +12,16 @@ public class SQLRepo : IRepo
     }
 
     public List<Person> GetAll() => _context.People.ToList();
+
+    public List<Person> GetAll(int? pageNumber, int pageSize)
+    {
+        pageNumber ??= 1;
+        IQueryable<Person> people = _context.People;
+        people = people.Skip((pageNumber.Value - 1) * pageSize).Take(pageSize);
+        return people.AsNoTracking().ToList();
+    }
+
+    public int GetCount() => _context.People.Count();
 
     public Person? Get(int id)
     {
@@ -69,7 +81,7 @@ public class SQLRepo : IRepo
         Save();
     }
 
-    public void Save() => _context.SaveChanges();
+    public void Save() => _context.SaveChangesAsync();
 
     private void PopulateChildrenOf(Person? person)
     {

@@ -1,9 +1,17 @@
-﻿@model PersonListViewModel
+﻿@model PagedListViewModel<Person>
 @using SilvagenumWebApp.Pages.App
 
-<h1>@Model.CurrentTree</h1>
-@foreach(var person in Model.People)
+<h1>@Model.Title</h1>
+@foreach(var person in Model)
 {
     <component type="typeof(PersonCard)" render-mode="WebAssemblyPrerendered" param-Person=person param-SelectionType="@("none")" param-RelatedId="0"/>
     <script src="_framework/blazor.webassembly.js"></script>
 }
+
+@{
+    string previousButtonDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    string nextButtonDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" class="btn btn-secondary @previousButtonDisabled">Previous</a>
+<a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" class="btn btn-secondary @nextButtonDisabled">Next</a>

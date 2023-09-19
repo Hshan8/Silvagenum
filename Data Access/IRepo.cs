@@ -3,6 +3,8 @@
 public interface IRepo
 {
     public List<Person> GetAll();
+    public List<Person> GetAll(int? pageNumber, int pageSize);
+    public int GetCount();
     public Person? Get(int id);
     public List<Person>? Get(string name);
     public void Add(Person toBeAdded);
